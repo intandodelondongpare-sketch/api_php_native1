@@ -7,7 +7,7 @@ class UserController {
             "success" => true,
             "data" => [
                 ["id" => 1, "name" => "Admin", "email" => "admin@example.com"],
-                ["id" => 2, "name" => "Intan", "email" => "intan@example.com"]
+                ["id" => 2, "name" => "Agusrini", "email" => "agusrini@example.com"]
             ]
         ]);
     }
