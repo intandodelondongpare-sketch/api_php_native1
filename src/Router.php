@@ -1,16 +1,15 @@
 <?php
 require_once __DIR__ . '/Controller/UserController.php';
-
-$method = $_SERVER['REQUEST_METHOD'];
-$path = $_SERVER['REQUEST_URI'];
-
-// Ambil koneksi database
 require_once __DIR__ . '/../config/database.php';
-$userController = new UserController($conn);
 
 header("Content-Type: application/json");
 
-if (preg_match('/\/users(\/(\d+))?/', $path, $matches)) {
+$method = $_SERVER['REQUEST_METHOD'];
+$requestUri = $_SERVER['REQUEST_URI'];
+
+$userController = new UserController($conn);
+
+if (preg_match('/\/users(\/(\d+))?/', $requestUri, $matches)) {
     $id = isset($matches[2]) ? intval($matches[2]) : null;
 
     switch ($method) {
@@ -27,12 +26,11 @@ if (preg_match('/\/users(\/(\d+))?/', $path, $matches)) {
             if ($id) {
                 $userController->delete($id);
             } else {
-                echo json_encode(["status" => "error", "message" => "ID diperlukan untuk menghapus user"]);
+                echo json_encode(["status" => "error", "message" => "ID diperlukan untuk hapus user"]);
             }
             break;
         default:
-            echo json_encode(["status" => "error", "message" => "Metode tidak didukung"]);
-            break;
+            echo json_encode(["status" => "error", "message" => "Method tidak didukung"]);
     }
 } else {
     echo json_encode(["status" => "error", "message" => "Endpoint tidak ditemukan"]);

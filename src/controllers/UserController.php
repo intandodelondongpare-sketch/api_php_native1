@@ -8,7 +8,7 @@ class UserController {
         $this->conn = $conn;
     }
 
-    // GET (Ambil semua user atau berdasarkan ID)
+    // GET - ambil semua user atau satu user
     public function get($id = null) {
         if ($id) {
             $sql = "SELECT * FROM users WHERE id = $id";
@@ -17,20 +17,20 @@ class UserController {
         } else {
             $sql = "SELECT * FROM users";
             $result = $this->conn->query($sql);
-            $data = [];
+            $users = [];
             while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
+                $users[] = $row;
             }
-            echo json_encode($data);
+            echo json_encode($users);
         }
     }
 
-    // POST (Tambah user)
+    // POST - tambah user baru
     public function create() {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $username = $this->conn->real_escape_string($input['username']);
-        $email = $this->conn->real_escape_string($input['email']);
-        $password = password_hash($input['password'], PASSWORD_DEFAULT);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $username = $this->conn->real_escape_string($data['username']);
+        $email = $this->conn->real_escape_string($data['email']);
+        $password = password_hash($data['password'], PASSWORD_DEFAULT);
 
         $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
         if ($this->conn->query($sql)) {
@@ -40,13 +40,13 @@ class UserController {
         }
     }
 
-    // PUT (Update user)
+    // PUT - update user
     public function update() {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $id = intval($input['id']);
-        $username = $this->conn->real_escape_string($input['username']);
-        $email = $this->conn->real_escape_string($input['email']);
-        $password = password_hash($input['password'], PASSWORD_DEFAULT);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $id = intval($data['id']);
+        $username = $this->conn->real_escape_string($data['username']);
+        $email = $this->conn->real_escape_string($data['email']);
+        $password = password_hash($data['password'], PASSWORD_DEFAULT);
 
         $sql = "UPDATE users SET username='$username', email='$email', password='$password' WHERE id=$id";
         if ($this->conn->query($sql)) {
@@ -56,7 +56,7 @@ class UserController {
         }
     }
 
-    // DELETE (Hapus user)
+    // DELETE - hapus user
     public function delete($id) {
         $sql = "DELETE FROM users WHERE id = $id";
         if ($this->conn->query($sql)) {
