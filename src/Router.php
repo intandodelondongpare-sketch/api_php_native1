@@ -1,25 +1,40 @@
 <?php
-namespace Src;
+require_once __DIR__ . '/Controller/UserController.php';
 
-class Router {
-    private array $routes = [];
+$method = $_SERVER['REQUEST_METHOD'];
+$path = $_SERVER['REQUEST_URI'];
 
-    public function add(string $method, string $path, callable $handler) {
-        $this->routes[] = compact('method', 'path', 'handler');
-    }
+// Ambil koneksi database
+require_once __DIR__ . '/../config/database.php';
+$userController = new UserController($conn);
 
-    public function run() {
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $method = $_SERVER['REQUEST_METHOD'];
+header("Content-Type: application/json");
 
-        foreach ($this->routes as $route) {
-            if ($route['method'] === $method && $route['path'] === $uri) {
-                call_user_func($route['handler']);
-                return;
+if (preg_match('/\/users(\/(\d+))?/', $path, $matches)) {
+    $id = isset($matches[2]) ? intval($matches[2]) : null;
+
+    switch ($method) {
+        case 'GET':
+            $userController->get($id);
+            break;
+        case 'POST':
+            $userController->create();
+            break;
+        case 'PUT':
+            $userController->update();
+            break;
+        case 'DELETE':
+            if ($id) {
+                $userController->delete($id);
+            } else {
+                echo json_encode(["status" => "error", "message" => "ID diperlukan untuk menghapus user"]);
             }
-        }
-
-        http_response_code(404);
-        echo json_encode(["success" => false, "error" => "Route not found"]);
+            break;
+        default:
+            echo json_encode(["status" => "error", "message" => "Metode tidak didukung"]);
+            break;
     }
+} else {
+    echo json_encode(["status" => "error", "message" => "Endpoint tidak ditemukan"]);
 }
+?>

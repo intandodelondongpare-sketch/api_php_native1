@@ -1,25 +1,12 @@
 <?php
-// config/database.php
-class Database {
-    private $host = "localhost";
-    private $db_name = "apinative";
-    private $username = "root";
-    private $password = "";
-    public $conn;
+$host = "localhost";
+$user = "root";
+$pass = "";
+$dbname = "mydatabase"; // ganti sesuai nama database kamu
 
-    public function getConnection() {
-        $this->conn = null;
-        try {
-            $this->conn = new PDO(
-                "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
-                $this->username,
-                $this->password
-            );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $exception) {
-            echo "Koneksi gagal: " . $exception->getMessage();
-        }
-        return $this->conn;
-    }
+$conn = new mysqli($host, $user, $pass, $dbname);
+
+if ($conn->connect_error) {
+    die(json_encode(["status" => "error", "message" => "Koneksi gagal: " . $conn->connect_error]));
 }
 ?>
